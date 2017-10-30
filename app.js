@@ -23,7 +23,8 @@ function sendRequest(chatId, i) {
        var data = JSON.parse(body);
     
         bot.sendMessage(chatId,
-            data[i].name +' (' + data[i].symbol + ')' + '\nЦена ($): ' + data[i].price_usd + '\nЦена (BTC): ' + data[i].price_btc
+            data[i].name +' (' + data[i].symbol + ')' + '\nЦена ($): ' + 
+            data[i].price_usd + '\nЦена (BTC): ' + data[i].price_btc
         );
     });
 };
