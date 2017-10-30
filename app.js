@@ -1,10 +1,29 @@
 const token = '469094055:AAFdKs9jkqZiXqaXBd9V5TOep8OgCL1r3Fc';
-const fs = require('fs');
 const telegramBot = require('node-telegram-bot-api');
+const request = require('request');
+// const fs = require('fs');
 
 const bot = new telegramBot(token, {
     polling: true
 });
+
+var urlCourse = 'https://api.coinmarketcap.com/v1/ticker/?limit=5';
+
+function sendRequest(chatId, urlCourse, i) {
+    request(urlCourse, function (error, response, body) {
+        // console.log('error:', error); // Print the error if one occurred
+        // console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        // console.log('body:', body); // Print the HTML for the Google homepage
+        var data = JSON.parse(body);
+        // var btc = data[0];
+        // var eth = data[1];
+    
+        bot.sendMessage(chatId,
+            data[i].name +' (' + data[i].symbol + ')' + '\nЦена ($): ' + data[i].price_usd + ' $ \nЦена (BTC): ' + data[i].price_btc + ' BTC'
+        );
+        // console.log();
+    });
+}
 
 function start(chatId) {
     bot.sendMessage(chatId, 'Привет! Я криптоБот. \nВыбери валюту, чтобы продолжить!', {
@@ -13,18 +32,18 @@ function start(chatId) {
                 text: 'BTC'
             }],
             [{
-                text: 'TOP-5'
+                text: 'ETH'
             }]]
         })
     });
 }
 
-function sendBTC(chatId) {
-    bot.sendMessage(chatId, 'Курс BTC' + ' составляет 50.000 Р');
+function sendBTC(chatId, urlCourse, i) {
+    sendRequest(chatId, urlCourse, i);
 }
 
-function sendTop(chatId) {
-    bot.sendMessage(chatId, 'Курс TOP-5 валют' + ' составляет 50.000 Р');
+function sendETH(chatId, urlCourse, i) {
+    sendRequest(chatId, urlCourse, i);
 }
 
 bot.on('message', function(msg) {
@@ -35,10 +54,10 @@ bot.on('message', function(msg) {
             start(chatId);
             break;
         case 'BTC':
-            sendBTC(chatId);
+            sendBTC(chatId, urlCourse, 0);
             break;
-        case 'TOP-5':
-            sendTop(chatId);
+        case 'ETH':
+            sendETH(chatId, urlCourse, 1);
             break;
     }
 });
